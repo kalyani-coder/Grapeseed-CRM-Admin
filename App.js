@@ -1,20 +1,40 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NativeBaseProvider } from 'native-base';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-export default function App() {
+import Login from './Screens/Login/Login';
+import Dashboard from './Screens/Home/Dashboard';
+
+import ViewInquiryPage from './Screens/EnquiryDetails/EnquiryDetails';
+import ExecutiveForm from './Screens/AddExecutive/ExecutiveForm';
+import ViewExecutiveScreen from './Screens/ViewExecutiveScreen/ViewExecutiveScreen';
+import EnquiryDetails from './Screens/EnquiryDetails/EnquiryDetails';
+import ReportsScreen from './Screens/Report/Report';
+import ProfilePage from './Screens/Profile/Profile';
+
+
+
+const Stack = createStackNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    <NativeBaseProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          {/* <Stack.Screen name="Login" component={Login} /> */}
+          <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen name="ExecutiveForm" component={ExecutiveForm} />
+          <Stack.Screen name="ViewExecutiveScreen" component={ViewExecutiveScreen} />
+          <Stack.Screen name="EnquiryDetails" component={EnquiryDetails} />
+          <Stack.Screen name="Report" component={ReportsScreen} />
+          <Stack.Screen name="ViewInquiryPage" component={ViewInquiryPage} />
+          {/* <Stack.Screen name="ProfilePage" component={ProfilePage} /> */}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+        </Stack.Navigator>
+      </NavigationContainer>
+    </NativeBaseProvider>
+  );
+};
+
+export default App;
