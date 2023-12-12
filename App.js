@@ -22,7 +22,7 @@ const App = () => {
     <NativeBaseProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
-          {/* <Stack.Screen name="Login" component={Login} /> */}
+          <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Dashboard" component={Dashboard} />
           <Stack.Screen name="ExecutiveForm" component={ExecutiveForm} />
           <Stack.Screen name="ViewExecutiveScreen" component={ViewExecutiveScreen} />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, SafeAreaView, StyleSheet, View, TouchableOpacity, Alert, Image } from 'react-native';
+import { Text, SafeAreaView, StyleSheet, View, TouchableOpacity, Alert, Image, Linking } from 'react-native';
 import { NativeBaseProvider, Box, HStack, Pressable, Center, Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Card, Title, Paragraph } from 'react-native-paper';
@@ -17,10 +17,19 @@ function Footer() {
 
   const items = [
     { name: 'Home', icon: 'home' },
-    { name: 'Profile', icon: 'person' },
+    { name: '', icon: '' },
     { name: 'Settings', icon: 'settings' },
     // Add more items as needed
   ];
+
+  const handlePress = (index) => {
+    setSelected(index);
+    if (index === 2) {
+      // Open phone settings
+      Linking.openSettings();
+    }
+    // Handle other items as needed
+  };
 
   return (
     <HStack bg="black" alignItems="center" shadow={6}>
@@ -31,7 +40,7 @@ function Footer() {
           opacity={selected === index ? 1 : 0.5}
           py="2"
           flex={1}
-          onPress={() => setSelected(index)}
+          onPress={() => handlePress(index)}
         >
           <Center>
             <Icon mb="1" as={<MaterialIcons name={item.icon} />} size="sm" />

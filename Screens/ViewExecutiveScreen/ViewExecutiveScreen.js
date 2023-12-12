@@ -1,6 +1,58 @@
 // ViewExecutiveScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
+import { useNavigation } from '@react-navigation/native';// Make sure to install axios
+
+import { NativeBaseProvider, Box, HStack, Pressable, Center, Icon } from 'native-base';
+import { MaterialIcons } from '@expo/vector-icons';
+
+
+
+function Footer() {
+    const [selected, setSelected] = React.useState(0);
+    const navigation = useNavigation();
+
+    const items = [
+        { name: 'Home', icon: 'home' },
+        { name: '', icon: '' },
+        { name: 'Settings', icon: 'settings' },
+        // Add more items as needed
+    ];
+
+    const handlePress = (index) => {
+        setSelected(index);
+        if (index === 0) {
+            // Navigate to the dashboard
+            navigation.navigate('Dashboard');
+        } else if (index === 2) {
+            // Open phone settings
+            Linking.openSettings();
+        }
+        // Handle other items as needed
+    };
+
+    return (
+        <HStack bg="black" alignItems="center" shadow={6}>
+            {items.map((item, index) => (
+                <Pressable
+                    key={index}
+                    cursor="pointer"
+                    opacity={selected === index ? 1 : 0.5}
+                    py="2"
+                    flex={1}
+                    onPress={() => handlePress(index)}
+                >
+                    <Center>
+                        <Icon mb="1" as={<MaterialIcons name={item.icon} />} size="sm" />
+                        <Text color="white" fontSize="12" style={styles.footerText}>
+                            {item.name}
+                        </Text>
+                    </Center>
+                </Pressable>
+            ))}
+        </HStack>
+    );
+}
 
 const ViewExecutiveScreen = () => {
     const [executiveData, setExecutiveData] = useState([]);
@@ -32,79 +84,90 @@ const ViewExecutiveScreen = () => {
     }, []); // Empty dependency array means this effect runs once when the component mounts
 
     return (
-        <ScrollView style={styles.container}>
-            {/* Image and Title Section */}
-            <View style={styles.header}>
-                <Image
-                    style={styles.logo}
-                    source={require('../../assets/gapeseed-logo.png')}
-                    resizeMode="contain"
-                />
-                <Text style={styles.title}>View Executive</Text>
-            </View>
-
-            {/* Executive Details Section */}
-            {executiveData.map((executive) => (
-                <View key={executive.id} style={styles.executiveDetails}>
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Full Name:</Text>
-                        <Text style={styles.value}>{executive.clientName}</Text>
-                    </View>
-
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Contact:</Text>
-                        <Text style={styles.value}>{executive.clientPhone}</Text>
-                    </View>
-
-                    {showDetails && selectedExecutive === executive && (
-                        <>
-                            <View style={styles.row}>
-                                <Text style={styles.label}>Address:</Text>
-                                <Text style={styles.value}>{executive.clientAddress}</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.label}>Pan Card:</Text>
-                                <Text style={styles.value}>{executive.clientPanCard}</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.label}>Email:</Text>
-                                <Text style={styles.value}>{executive.clientEmail}</Text>
-                            </View>
-
-                            <View style={styles.row}>
-                                <Text style={styles.label}>Password:</Text>
-                                {passwordVisible ? (
-                                    <Text style={styles.value}>{executive.clientpassword}</Text>
-                                ) : (
-                                    <TextInput
-                                        style={styles.passwordInput}
-                                        value={(executive.clientpassword || '').replace(/./g, '*')}
-                                        editable={false}
-                                    />
-                                )}
-                                <TouchableOpacity onPress={togglePasswordVisibility}>
-                                    <Text style={styles.eyeIcon}>{passwordVisible ? '👁️' : '🔒'}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </>
-                    )}
-
-                    {/* View More Button */}
-                    <TouchableOpacity onPress={() => toggleDetails(executive)}>
-                        <Text style={styles.viewMore}>{showDetails ? 'View Less' : 'View More'}</Text>
-                    </TouchableOpacity>
+        <NativeBaseProvider>
+            <ScrollView style={styles.container}>
+                {/* Image and Title Section */}
+                <View style={styles.header}>
+                    <Image
+                        style={styles.logo}
+                        source={require('../../assets/gapeseed-logo.png')}
+                        resizeMode="contain"
+                    />
+                    <Text style={styles.title}>View Executive</Text>
                 </View>
-            ))}
-        </ScrollView>
+
+                {/* Executive Details Section */}
+                {executiveData.map((executive, index) => (
+                    <View
+                        key={executive.id}
+                        style={[
+                            styles.executiveDetails,
+                            index === executiveData.length - 1 ? styles.lastItemMargin : null,
+                        ]}
+                    >
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Full Name:</Text>
+                            <Text style={styles.value}>{executive.clientName}</Text>
+                        </View>
+
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Contact:</Text>
+                            <Text style={styles.value}>{executive.clientPhone}</Text>
+                        </View>
+
+                        {showDetails && selectedExecutive === executive && (
+                            <>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Address:</Text>
+                                    <Text style={styles.value}>{executive.clientAddress}</Text>
+                                </View>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Pan Card:</Text>
+                                    <Text style={styles.value}>{executive.clientPanCard}</Text>
+                                </View>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Email:</Text>
+                                    <Text style={styles.value}>{executive.clientEmail}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Password:</Text>
+                                    {passwordVisible ? (
+                                        <Text style={styles.value}>{executive.clientpassword}</Text>
+                                    ) : (
+                                        <TextInput
+                                            style={styles.passwordInput}
+                                            value={(executive.clientpassword || '').replace(/./g, '*')}
+                                            editable={false}
+                                        />
+                                    )}
+                                    <TouchableOpacity onPress={togglePasswordVisibility}>
+                                        <Text style={styles.eyeIcon}>{passwordVisible ? '👁️' : '🔒'}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        )}
+
+                        {/* View More Button */}
+                        <TouchableOpacity onPress={() => toggleDetails(executive)}>
+                            <Text style={styles.viewMore}>{showDetails ? 'View Less' : 'View More'}</Text>
+                        </TouchableOpacity>
+                    </View>
+                ))}
+            </ScrollView>
+            <Footer />
+        </NativeBaseProvider>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#daa520',
         padding: 20,
+    },
+    footerText: {
+        color: 'white',
     },
     header: {
         alignItems: 'center',
@@ -163,6 +226,9 @@ const styles = StyleSheet.create({
         color: 'black',
         marginLeft: 5,
         marginTop: 2,
+    },
+    lastItemMargin: {
+        marginBottom: 50, // Add the desired bottom margin for the last item
     },
 });
 
