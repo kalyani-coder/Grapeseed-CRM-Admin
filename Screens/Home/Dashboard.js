@@ -12,25 +12,27 @@ import Navbar from '../Navbar/Navbar';
 function Footer() {
   const [selected, setSelected] = React.useState(0);
   // Get the navigation prop
-
+  const navigation = useNavigation();
 
 
   const items = [
     { name: 'Home', icon: 'home' },
+    { name: 'Logout', icon: 'exit-to-app' }, // Add logout item
     { name: 'Settings', icon: 'settings' },
-    { name: 'Logout', icon: '' },
     // Add more items as needed
   ];
-
   const handlePress = (index) => {
     setSelected(index);
     if (index === 2) {
       // Open phone settings
       Linking.openSettings();
+    } else if (index === 1) {
+      // Handle logout
+      // You can add any logout logic here, and navigate to the login screen
+      navigation.navigate('Login'); // Assuming 'Login' is the name of your login screen
     }
     // Handle other items as needed
   };
-
   return (
     <HStack bg="black" alignItems="center" shadow={6}>
       {items.map((item, index) => (
@@ -122,7 +124,7 @@ export default function Dashboard() {
   return (
     <NativeBaseProvider>
       <SafeAreaView style={{ ...styles.container }}>
-        {/* <View><Navbar /></View> */}
+        <View><Navbar /></View>
         <Box flex={1} bg="#daa520" safeAreaTop width="100%" alignSelf="center">
           <Box flex={1} justifyContent="flex-end">
             {/* Image Section */}

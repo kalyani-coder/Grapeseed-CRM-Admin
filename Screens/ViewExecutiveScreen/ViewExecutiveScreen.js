@@ -10,49 +10,50 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 function Footer() {
     const [selected, setSelected] = React.useState(0);
+    // Get the navigation prop
     const navigation = useNavigation();
-
+  
+  
     const items = [
-        { name: 'Home', icon: 'home' },
-        { name: '', icon: '' },
-        { name: 'Settings', icon: 'settings' },
-        // Add more items as needed
+      { name: 'Home', icon: 'home' },
+      { name: 'Logout', icon: 'exit-to-app' }, // Add logout item
+      { name: 'Settings', icon: 'settings' },
+      // Add more items as needed
     ];
-
     const handlePress = (index) => {
-        setSelected(index);
-        if (index === 0) {
-            // Navigate to the dashboard
-            navigation.navigate('Dashboard');
-        } else if (index === 2) {
-            // Open phone settings
-            Linking.openSettings();
-        }
-        // Handle other items as needed
+      setSelected(index);
+      if (index === 2) {
+        // Open phone settings
+        Linking.openSettings();
+      } else if (index === 1) {
+        // Handle logout
+        // You can add any logout logic here, and navigate to the login screen
+        navigation.navigate('Login'); // Assuming 'Login' is the name of your login screen
+      }
+      // Handle other items as needed
     };
-
     return (
-        <HStack bg="black" alignItems="center" shadow={6}>
-            {items.map((item, index) => (
-                <Pressable
-                    key={index}
-                    cursor="pointer"
-                    opacity={selected === index ? 1 : 0.5}
-                    py="2"
-                    flex={1}
-                    onPress={() => handlePress(index)}
-                >
-                    <Center>
-                        <Icon mb="1" as={<MaterialIcons name={item.icon} />} size="sm" />
-                        <Text color="white" fontSize="12" style={styles.footerText}>
-                            {item.name}
-                        </Text>
-                    </Center>
-                </Pressable>
-            ))}
-        </HStack>
+      <HStack bg="black" alignItems="center" shadow={6}>
+        {items.map((item, index) => (
+          <Pressable
+            key={index}
+            cursor="pointer"
+            opacity={selected === index ? 1 : 0.5}
+            py="2"
+            flex={1}
+            onPress={() => handlePress(index)}
+          >
+            <Center>
+              <Icon mb="1" as={<MaterialIcons name={item.icon} />} size="sm" />
+              <Text color="white" fontSize="12" style={styles.footerText}>
+                {item.name}
+              </Text>
+            </Center>
+          </Pressable>
+        ))}
+      </HStack>
     );
-}
+  }
 
 const ViewExecutiveScreen = () => {
     const [executiveData, setExecutiveData] = useState([]);
