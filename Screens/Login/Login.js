@@ -1,6 +1,6 @@
 // Import necessary modules and components
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Animated, Easing, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, Animated, Easing, Alert, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
@@ -69,6 +69,13 @@ const Login = () => {
     return (
         <ImageBackground style={styles.backgroundImage}>
             <View style={styles.container}>
+                <View style={styles.logocontainer}>
+                    <Image
+                        style={styles.logo}
+                        source={require('../../assets/gapeseed-logo.png')}
+                        resizeMode="contain"
+                    />
+                </View>
                 <Text style={styles.loginHeading}>Login</Text>
 
                 <View style={styles.inputContainer}>
@@ -139,6 +146,13 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 10,
+    },
+    logo: {
+        width: 250,
+        height: 200,
+    },
+    logocontainer: {
+        alignSelf: 'center'
     },
     input: {
         flex: 1,

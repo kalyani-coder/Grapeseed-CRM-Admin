@@ -124,7 +124,7 @@ export default function Dashboard() {
   return (
     <NativeBaseProvider>
       <SafeAreaView style={{ ...styles.container }}>
-        <View><Navbar /></View>
+        {/* <View><Navbar /></View> */}
         <Box flex={1} bg="#daa520" safeAreaTop width="100%" alignSelf="center">
           <Box flex={1} justifyContent="flex-end">
             {/* Image Section */}

@@ -7,30 +7,30 @@ import { NativeBaseProvider, Box, HStack, Pressable, Center, Icon } from 'native
 import { MaterialIcons } from '@expo/vector-icons';
 
 
-
 function Footer() {
     const [selected, setSelected] = React.useState(0);
+    // Get the navigation prop
     const navigation = useNavigation();
+
 
     const items = [
         { name: 'Home', icon: 'home' },
-        { name: '', icon: '' },
+        { name: 'Logout', icon: 'exit-to-app' }, // Add logout item
         { name: 'Settings', icon: 'settings' },
         // Add more items as needed
     ];
-
     const handlePress = (index) => {
         setSelected(index);
-        if (index === 0) {
-            // Navigate to the dashboard
-            navigation.navigate('Dashboard');
-        } else if (index === 2) {
+        if (index === 2) {
             // Open phone settings
             Linking.openSettings();
+        } else if (index === 1) {
+            // Handle logout
+            // You can add any logout logic here, and navigate to the login screen
+            navigation.navigate('Login'); // Assuming 'Login' is the name of your login screen
         }
         // Handle other items as needed
     };
-
     return (
         <HStack bg="black" alignItems="center" shadow={6}>
             {items.map((item, index) => (
@@ -166,9 +166,9 @@ const ReportDetails = () => {
                     <Text style={styles.title}>Enquiry Details</Text>
                 </View>
 
-                <TouchableOpacity onPress={downloadPDF}>
+                {/* <TouchableOpacity onPress={downloadPDF}>
                     <Text style={styles.downloadButton}>Download PDF</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 {/* Enquiry Entry Section */}
                 {enquiryData.map((enquiry, index) => (
