@@ -17,8 +17,8 @@ function Footer() {
 
   const items = [
     { name: 'Home', icon: 'home' },
-    { name: '', icon: '' },
     { name: 'Settings', icon: 'settings' },
+    { name: 'Logout', icon: '' },
     // Add more items as needed
   ];
 
@@ -122,12 +122,12 @@ export default function Dashboard() {
   return (
     <NativeBaseProvider>
       <SafeAreaView style={{ ...styles.container }}>
-        <View><Navbar /></View>
+        {/* <View><Navbar /></View> */}
         <Box flex={1} bg="#daa520" safeAreaTop width="100%" alignSelf="center">
           <Box flex={1} justifyContent="flex-end">
             {/* Image Section */}
             <Image
-              source={{ uri: 'https://finvestfox.com/wp-content/uploads/2020/09/mutual-fund-768x432.jpg' }}
+              source={require('../../assets/gapeseed-logo.png')}
               alt='img'
               style={styles.image}
             />

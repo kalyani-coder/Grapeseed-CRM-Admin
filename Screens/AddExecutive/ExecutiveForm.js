@@ -85,7 +85,7 @@ const ExecutiveForm = () => {
                 clientpassword,
             };
 
-            await axios.post('https://executive-grapeseed.onrender.com/api/clients', executiveData);
+            await axios.post('https://grapeseed-executive.onrender.com/api/clients', executiveData);
 
             // Display success message
             setSuccessMessage('Executive added successfully');

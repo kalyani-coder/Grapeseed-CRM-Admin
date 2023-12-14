@@ -29,7 +29,7 @@ const App = () => {
           <Stack.Screen name="EnquiryDetails" component={EnquiryDetails} />
           <Stack.Screen name="Report" component={ReportsScreen} />
           <Stack.Screen name="ViewInquiryPage" component={ViewInquiryPage} />
-          {/* <Stack.Screen name="ProfilePage" component={ProfilePage} /> */}
+        
 
         </Stack.Navigator>
       </NavigationContainer>

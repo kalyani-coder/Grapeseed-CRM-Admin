@@ -1,9 +1,10 @@
-// ViewExecutiveScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeBaseProvider, Box, HStack, Pressable, Center, Icon } from 'native-base';
+import { NativeBaseProvider, HStack, Pressable, Icon, Center } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
+
+// Footer component for navigation
 
 function Footer() {
     const [selected, setSelected] = React.useState(0);
@@ -12,16 +13,19 @@ function Footer() {
     const items = [
         { name: 'Home', icon: 'home' },
         { name: '', icon: '' },
-        { name: 'Settings', icon: 'settings' },
+        // Add more items as needed
     ];
 
     const handlePress = (index) => {
         setSelected(index);
         if (index === 0) {
+            // Navigate to the dashboard
             navigation.navigate('Dashboard');
         } else if (index === 2) {
+            // Open phone settings
             Linking.openSettings();
         }
+        // Handle other items as needed
     };
 
     return (
@@ -47,35 +51,46 @@ function Footer() {
     );
 }
 
-const ViewExecutiveScreen = () => {
-    const [executiveData, setExecutiveData] = useState([]);
-    const [showDetails, setShowDetails] = useState(false);
-    const [selectedExecutive, setSelectedExecutive] = useState(null);
-    const [passwordVisible, setPasswordVisible] = useState(false);
+// Main component for EnquiryDetails
+const EnquiryDetails = () => {
+    const [expandedEnquiry, setExpandedEnquiry] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [enquiryData, setEnquiryData] = useState([]);
 
-    const toggleDetails = (executive) => {
-        setShowDetails(!showDetails);
-        setSelectedExecutive(executive);
+    // Toggle details visibility
+    const toggleDetails = (index) => {
+        setExpandedEnquiry((prev) => (prev === index ? null : index));
     };
 
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!passwordVisible);
+    // Filter enquiries based on search query
+    const filterEnquiries = () => {
+        return enquiryData.filter((enquiry) => {
+            const customerName = (enquiry.name || '').toLowerCase();
+            const executiveName = (enquiry.executiveName || '').toLowerCase();
+
+            return customerName.includes(searchQuery.toLowerCase()) || executiveName.includes(searchQuery.toLowerCase());
+        });
     };
 
+    // Fetch data from the API
+    const fetchData = async () => {
+        try {
+            const response = await fetch('https://executive-grapeseed.onrender.com/api/enquiry');
+            const data = await response.json();
+            setEnquiryData(data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    // Use effect to fetch data on component mount
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('https://executive-grapeseed.onrender.com/api/clients');
-                const data = await response.json();
-                setExecutiveData(data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
         fetchData();
-    }, []);
+    }, []); // Empty dependency array means this effect runs once when the component mounts
 
+    // Get the last index of filtered enquiries
+    const lastIndex = filterEnquiries().length - 1;
+    // Render the component
     return (
         <NativeBaseProvider>
             <ScrollView style={styles.container}>
@@ -86,65 +101,139 @@ const ViewExecutiveScreen = () => {
                         source={require('../../assets/gapeseed-logo.png')}
                         resizeMode="contain"
                     />
-                    <Text style={styles.title}>View Executive</Text>
+                    <Text style={styles.title}>Enquiry Details</Text>
                 </View>
 
-                {/* Executive Details Section */}
-                {executiveData.map((executive, index) => (
+                {/* Search Bar */}
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder="Search by Customer or Executive Name"
+                    value={searchQuery}
+                    onChangeText={(text) => setSearchQuery(text)}
+                />
+
+                {/* Enquiry Entry Section */}
+                {filterEnquiries().map((enquiry, index) => (
                     <View
-                        key={executive.id}
+                        key={index}
                         style={[
-                            styles.executiveDetails,
-                            index === executiveData.length - 1 ? styles.lastItemMargin : null,
+                            styles.enquiryEntry,
+                            index === lastIndex && { marginBottom: 50 }, // Add marginBottom for the last item
                         ]}
                     >
                         <View style={styles.row}>
-                            <Text style={styles.label}>Full Name:</Text>
-                            <Text style={styles.value}>{executive.clientName}</Text>
+                            <Text style={styles.label}>Customer Name:</Text>
+                            <Text style={styles.value}>{enquiry.name}</Text>
                         </View>
-
-                        <View style={styles.row}>
-                            <Text style={styles.label}>Contact:</Text>
-                            <Text style={styles.value}>{executive.clientPhone}</Text>
-                        </View>
-
-                        {showDetails && selectedExecutive === executive && (
-                            <>
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Address:</Text>
-                                    <Text style={styles.value}>{executive.clientAddress}</Text>
-                                </View>
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Pan Card:</Text>
-                                    <Text style={styles.value}>{executive.clientPanCard}</Text>
-                                </View>
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Email:</Text>
-                                    <Text style={styles.value}>{executive.clientEmail}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Password:</Text>
-                                    {passwordVisible ? (
-                                        <Text style={styles.value}>{executive.clientpassword}</Text>
-                                    ) : (
-                                        <TextInput
-                                            style={styles.passwordInput}
-                                            value={(executive.clientpassword || '').replace(/./g, '*')}
-                                            editable={false}
-                                        />
-                                    )}
-                                    <TouchableOpacity onPress={togglePasswordVisibility}>
-                                        <Text style={styles.eyeIcon}>{passwordVisible ? '👁️' : '🔒'}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        )}
 
                         {/* View More Button */}
-                        <TouchableOpacity onPress={() => toggleDetails(executive)}>
-                            <Text style={styles.viewMore}>{showDetails ? 'View Less' : 'View More'}</Text>
+                        <TouchableOpacity onPress={() => toggleDetails(index)}>
+                            <Text style={styles.viewMore}>
+                                {expandedEnquiry === index ? 'View Less' : 'View More'}
+                            </Text>
                         </TouchableOpacity>
+
+                        {/* Enquiry Details Section */}
+                        {expandedEnquiry === index && (
+                            <View style={styles.enquiryDetails}>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Pan Card:</Text>
+                                    <Text style={styles.value}>{enquiry.Pan_Card}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Adhar Card:</Text>
+                                    <Text style={styles.value}>{enquiry.Adhar_Card}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Cancelled Cheque:</Text>
+                                    <Text style={styles.value}>{enquiry.Cancelled_cheque}</Text>
+                                </View>
+
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Image:</Text>
+                                    <Text style={styles.value}>{enquiry.uploaded_image}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Contact:</Text>
+                                    <Text style={styles.value}>{enquiry.mobile_nu}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Alternative Mobile:</Text>
+                                    <Text style={styles.value}>{enquiry.Alternative_Mobile}</Text>
+                                </View>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Mother Name:</Text>
+                                    <Text style={styles.value}>{enquiry.Mother_Name}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Email:</Text>
+                                    <Text style={styles.value}>{enquiry.Email}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Last Education:</Text>
+                                    <Text style={styles.value}>{enquiry.Last_Education}</Text>
+                                </View>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Married Status:</Text>
+                                    <Text style={styles.value}>{enquiry.Married_Status}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Nominee Name:</Text>
+                                    <Text style={styles.value}>{enquiry.Nominee_Name}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Nominee DOB:</Text>
+                                    <Text style={styles.value}>{enquiry.Nominee_DOB}</Text>
+                                </View>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Nominee Ralationship:</Text>
+                                    <Text style={styles.value}>{enquiry.Nominee_Ralationship}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Company Name:</Text>
+                                    <Text style={styles.value}>{enquiry.Company_Name}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Annual Income:</Text>
+                                    <Text style={styles.value}>{enquiry.Annual_Income}</Text>
+                                </View>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Industry Name:</Text>
+                                    <Text style={styles.value}>{enquiry.Industry_Name}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Height:</Text>
+                                    <Text style={styles.value}>{enquiry.Height}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Weight:</Text>
+                                    <Text style={styles.value}>{enquiry.Weight}</Text>
+                                </View>
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>Life Cover:</Text>
+                                    <Text style={styles.value}>{enquiry.Life_Cover}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={styles.label}>medical History:</Text>
+                                    <Text style={styles.value}>{enquiry.medical_History}</Text>
+                                </View>
+
+                            </View>
+                        )}
                     </View>
                 ))}
             </ScrollView>
@@ -153,6 +242,7 @@ const ViewExecutiveScreen = () => {
     );
 };
 
+// Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -176,12 +266,17 @@ const styles = StyleSheet.create({
         marginTop: 10,
         color: 'black',
     },
-    executiveDetails: {
+    enquiryEntry: {
         marginTop: 20,
+        marginBottom: 10,
         borderWidth: 1,
         borderColor: 'black',
-        padding: 10,
         borderRadius: 10,
+        overflow: 'hidden',
+        padding: 10,
+    },
+    enquiryDetails: {
+        marginTop: 20,
         marginBottom: 10,
         color: 'black',
     },
@@ -205,24 +300,15 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         marginTop: 5,
     },
-    passwordInput: {
-        flex: 2,
-        fontSize: 16,
-        color: 'black',
-        borderBottomWidth: 1,
-        borderBottomColor: 'black',
-        paddingBottom: 3,
-        marginRight: 5,
-    },
-    eyeIcon: {
-        fontSize: 20,
-        color: 'black',
-        marginLeft: 5,
-        marginTop: 2,
-    },
-    lastItemMargin: {
-        marginBottom: 50, // Add the desired bottom margin for the last item
+    searchBar: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginBottom: 20,
+        paddingHorizontal: 10,
+        borderRadius: 8,
     },
 });
 
-export default ViewExecutiveScreen;
+// Export the component
+export default EnquiryDetails;
