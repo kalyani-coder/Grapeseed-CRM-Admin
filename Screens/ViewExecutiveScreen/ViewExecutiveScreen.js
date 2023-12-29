@@ -30,6 +30,11 @@ function Footer() {
         // You can add any logout logic here, and navigate to the login screen
         navigation.navigate('Login'); // Assuming 'Login' is the name of your login screen
       }
+      else if (index === 0) {
+        // Handle logout
+        // You can add any logout logic here, and navigate to the login screen
+        navigation.navigate('Dashboard'); 
+      }
       // Handle other items as needed
     };
     return (

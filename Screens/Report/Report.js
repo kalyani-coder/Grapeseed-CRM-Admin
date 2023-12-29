@@ -1,36 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import { useNavigation } from '@react-navigation/native';// Make sure to install axios
-
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { NativeBaseProvider, Box, HStack, Pressable, Center, Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { PDFDocument, PDFPDFPage } from 'react-native-pdf-lib';
 
 function Footer() {
     const [selected, setSelected] = React.useState(0);
-    // Get the navigation prop
     const navigation = useNavigation();
-
 
     const items = [
         { name: 'Home', icon: 'home' },
-        { name: 'Logout', icon: 'exit-to-app' }, // Add logout item
+        { name: 'Logout', icon: 'exit-to-app' },
         { name: 'Settings', icon: 'settings' },
-        // Add more items as needed
     ];
+
     const handlePress = (index) => {
         setSelected(index);
         if (index === 2) {
-            // Open phone settings
             Linking.openSettings();
         } else if (index === 1) {
-            // Handle logout
-            // You can add any logout logic here, and navigate to the login screen
-            navigation.navigate('Login'); // Assuming 'Login' is the name of your login screen
+            navigation.navigate('Login');
+        } else if (index === 0) {
+            navigation.navigate('Dashboard');
         }
-        // Handle other items as needed
     };
+
     return (
         <HStack bg="black" alignItems="center" shadow={6}>
             {items.map((item, index) => (
@@ -83,75 +78,35 @@ const ReportDetails = () => {
         setExpandedReport((prev) => (prev === index ? null : index));
     };
 
-    const downloadPDF = async () => {
-        try {
-            if (!RNHTMLtoPDF) {
-                throw new Error('RNHTMLtoPDF is not available.');
-            }
+    // const downloadPDF = async () => {
+    //     try {
+    //         const pdfPath = 'path/to/save/pdf/document.pdf';
 
-            const htmlContent = generateHTMLContent();
-            const options = {
-                html: htmlContent,
-                fileName: 'EnquiryDetails',
-                directory: 'Documents',
-            };
-            const pdf = await RNHTMLtoPDF.convert(options);
-            const filePath = pdf.filePath;
-            Alert.alert('Success', `PDF downloaded at: ${filePath}`);
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-        }
-    };
+    //         // Create a new PDF document
+    //         const pdfDoc = await PDFDocument.create();
 
-    const generateHTMLContent = () => {
-        const tableRows = enquiryData.map((enquiry, index) => `
-            <tr>
-                <td>${enquiry.customerName}</td>
-                <td>${enquiry.enquiryDate}</td>
-                <td>${enquiry.executiveName}</td>
-                <td>${enquiry.Pan_Card}</td>
-                <td>${enquiry.Adhar_Card}</td>
-                <td>${enquiry.Cancelled_cheque}</td>
-                <!-- Add more fields based on your schema -->
-            </tr>
-        `);
+    //         // Add a new PDFPage to the document
+    //         const PDFPage = pdfDoc.addPage();
 
-        return `
-            <html>
-                <head>
-                    <style>
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                        }
-                        th, td {
-                            border: 1px solid black;
-                            padding: 8px;
-                            text-align: left;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Customer Name</th>
-                                <th>Enquiry Date</th>
-                                <th>Executive Name</th>
-                                <th>Pan Card</th>
-                                <th>Adhar Card</th>
-                                <th>Cancelled Cheque</th>
-                                <!-- Add more headers based on your schema -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows.join('')}
-                        </tbody>
-                    </table>
-                </body>
-            </html>
-        `;
-    };
+    //         // Draw text on the PDFPage (example text)
+    //         const { width, height } = PDFPage.getSize();
+    //         PDFPage.drawText('Hello, PDF!', {
+    //             x: 50,
+    //             y: height - 200,
+    //             color: '#000000',
+    //         });
+
+    //         // Save the document to a file
+    //         const pdfBytes = await pdfDoc.save();
+    //         // Save the generated PDF to a file
+    //         await RNFS.writeFile(pdfPath, pdfBytes, 'base64');
+
+    //         Alert.alert('Success', `PDF downloaded at: ${pdfPath}`);
+    //     } catch (error) {
+    //         console.error('Error generating PDF:', error);
+    //     }
+    // };
+
 
     return (
         <NativeBaseProvider>
@@ -178,24 +133,12 @@ const ReportDetails = () => {
                             <Text style={styles.value}>{enquiry.name}</Text>
                         </View>
 
-                        {/* <View style={styles.row}>
-                        <Text style={styles.label}>Enquiry Date:</Text>
-                        <Text style={styles.value}>{enquiry.enquiryDate}</Text>
-                    </View> */}
-
-                        {/* <View style={styles.row}>
-                        <Text style={styles.label}>Executive Name:</Text>
-                        <Text style={styles.value}>{enquiry.executiveName}</Text>
-                    </View> */}
-
-                        {/* View More Button */}
                         <TouchableOpacity onPress={() => toggleDetails(index)}>
                             <Text style={styles.viewMore}>
                                 {expandedReport === index ? 'View Less' : 'View More'}
                             </Text>
                         </TouchableOpacity>
 
-                        {/* Enquiry Details Section */}
                         {expandedReport === index && (
                             <View style={styles.enquiryDetails}>
                                 <View style={styles.row}>
@@ -213,90 +156,107 @@ const ReportDetails = () => {
                                     <Text style={styles.value}>{enquiry.Cancelled_cheque}</Text>
                                 </View>
 
+                                <View style={styles.enquiryDetails}>
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Pan Card:</Text>
+                                        <Text style={styles.value}>{enquiry.Pan_Card}</Text>
+                                    </View>
 
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Image:</Text>
-                                    <Text style={styles.value}>{enquiry.uploaded_image}</Text>
-                                </View>
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Adhar Card:</Text>
+                                        <Text style={styles.value}>{enquiry.Adhar_Card}</Text>
+                                    </View>
 
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Contact:</Text>
-                                    <Text style={styles.value}>{enquiry.mobile_nu}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Alternative Mobile:</Text>
-                                    <Text style={styles.value}>{enquiry.Alternative_Mobile}</Text>
-                                </View>
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Mother Name:</Text>
-                                    <Text style={styles.value}>{enquiry.Mother_Name}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Email:</Text>
-                                    <Text style={styles.value}>{enquiry.Email}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Last Education:</Text>
-                                    <Text style={styles.value}>{enquiry.Last_Education}</Text>
-                                </View>
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Married Status:</Text>
-                                    <Text style={styles.value}>{enquiry.Married_Status}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Nominee Name:</Text>
-                                    <Text style={styles.value}>{enquiry.Nominee_Name}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Nominee DOB:</Text>
-                                    <Text style={styles.value}>{enquiry.Nominee_DOB}</Text>
-                                </View>
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Nominee Ralationship:</Text>
-                                    <Text style={styles.value}>{enquiry.Nominee_Ralationship}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Company Name:</Text>
-                                    <Text style={styles.value}>{enquiry.Company_Name}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Annual Income:</Text>
-                                    <Text style={styles.value}>{enquiry.Annual_Income}</Text>
-                                </View>
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Industry Name:</Text>
-                                    <Text style={styles.value}>{enquiry.Industry_Name}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Height:</Text>
-                                    <Text style={styles.value}>{enquiry.Height}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Weight:</Text>
-                                    <Text style={styles.value}>{enquiry.Weight}</Text>
-                                </View>
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>Life Cover:</Text>
-                                    <Text style={styles.value}>{enquiry.Life_Cover}</Text>
-                                </View>
-
-                                <View style={styles.row}>
-                                    <Text style={styles.label}>medical History:</Text>
-                                    <Text style={styles.value}>{enquiry.medical_History}</Text>
-                                </View>
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Cancelled Cheque:</Text>
+                                        <Text style={styles.value}>{enquiry.Cancelled_cheque}</Text>
+                                    </View>
 
 
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Image:</Text>
+                                        <Text style={styles.value}>{enquiry.uploaded_image}</Text>
+                                    </View>
 
-                                {/* Add more details here based on your schema */}
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Contact:</Text>
+                                        <Text style={styles.value}>{enquiry.mobile_nu}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Alternative Mobile:</Text>
+                                        <Text style={styles.value}>{enquiry.Alternative_Mobile}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Mother Name:</Text>
+                                        <Text style={styles.value}>{enquiry.Mother_Name}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Email:</Text>
+                                        <Text style={styles.value}>{enquiry.Email}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Last Education:</Text>
+                                        <Text style={styles.value}>{enquiry.Last_Education}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Married Status:</Text>
+                                        <Text style={styles.value}>{enquiry.Married_Status}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Nominee Name:</Text>
+                                        <Text style={styles.value}>{enquiry.Nominee_Name}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Nominee DOB:</Text>
+                                        <Text style={styles.value}>{enquiry.Nominee_DOB}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Nominee Ralationship:</Text>
+                                        <Text style={styles.value}>{enquiry.Nominee_Ralationship}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Company Name:</Text>
+                                        <Text style={styles.value}>{enquiry.Company_Name}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Annual Income:</Text>
+                                        <Text style={styles.value}>{enquiry.Annual_Income}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Industry Name:</Text>
+                                        <Text style={styles.value}>{enquiry.Industry_Name}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Height:</Text>
+                                        <Text style={styles.value}>{enquiry.Height}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Weight:</Text>
+                                        <Text style={styles.value}>{enquiry.Weight}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>Life Cover:</Text>
+                                        <Text style={styles.value}>{enquiry.Life_Cover}</Text>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text style={styles.label}>medical History:</Text>
+                                        <Text style={styles.value}>{enquiry.medical_History}</Text>
+                                    </View>
+
+
+
+
+                                </View>
                             </View>
                         )}
                     </View>
@@ -340,7 +300,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     lastEnquiry: {
-        marginBottom: 50, // Add your desired bottom margin for the last enquiry
+        marginBottom: 50,
     },
     enquiryDetails: {
         marginTop: 20,

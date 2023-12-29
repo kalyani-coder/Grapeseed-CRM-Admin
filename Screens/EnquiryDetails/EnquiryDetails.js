@@ -14,7 +14,7 @@ function Footer() {
 
     const items = [
         { name: 'Home', icon: 'home' },
-        { name: 'Logout', icon: 'exit-to-app' }, // Add logout item
+        { name: 'Logout', icon: 'exit-to-app' }, 
         { name: 'Settings', icon: 'settings' },
         // Add more items as needed
     ];
@@ -26,7 +26,12 @@ function Footer() {
         } else if (index === 1) {
             // Handle logout
             // You can add any logout logic here, and navigate to the login screen
-            navigation.navigate('Login'); // Assuming 'Login' is the name of your login screen
+            navigation.navigate('Login'); 
+        }
+        else if (index === 0) {
+            // Handle logout
+            // You can add any logout logic here, and navigate to the login screen
+            navigation.navigate('Dashboard'); 
         }
         // Handle other items as needed
     };

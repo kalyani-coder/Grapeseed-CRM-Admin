@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     input: {
-        flex: 1,
+        flex: 1,   
         height: 40,
         color: 'white',
         paddingLeft: 8,
